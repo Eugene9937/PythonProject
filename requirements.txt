@@ -1,0 +1,4 @@
+pillow==12.2.0
+pyglm==2.8.3
+PyOpenGL==3.1.10
+tkinter-gl==1.1
