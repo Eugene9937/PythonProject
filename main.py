@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 
@@ -10,7 +11,11 @@ from tkinter import filedialog, messagebox
 
 from canvas import Canvas
 from model import load_model
+from scene import RenderMode
 from test_models import make_cube, make_octahedron, make_pyramid
+
+
+logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 
 class App(tk.Tk):
@@ -38,8 +43,13 @@ class App(tk.Tk):
         examples.add_command(label="Cube", command=self.load_cube)
         examples.add_command(label="Pyramid", command=self.load_pyramid)
         examples.add_command(label="Octahedron", command=self.load_octahedron)
-
         menu.add_cascade(label="Examples", menu=examples)
+
+        view = tk.Menu(menu, tearoff=False)
+        view.add_command(label="Wireframe", command=self.show_wireframe)
+        view.add_command(label="Solid", command=self.show_solid)
+        view.add_command(label="Textured", command=self.show_textured)
+        menu.add_cascade(label="View", menu=view)
 
         self.config(menu=menu)
 
@@ -54,6 +64,7 @@ class App(tk.Tk):
         try:
             model = load_model(path)
         except Exception:
+            logging.exception("could not open file")
             messagebox.showerror("Error", "Could not open file")
             return
 
@@ -71,6 +82,19 @@ class App(tk.Tk):
     def load_octahedron(self):
         self.canvas.set_model(make_octahedron())
         self.title("3D Viewer — Octahedron")
+
+    def show_wireframe(self):
+        self.canvas.set_mode(RenderMode.WIREFRAME)
+
+    def show_solid(self):
+        self.canvas.set_mode(RenderMode.SOLID)
+
+    def show_textured(self):
+        if not self.canvas.has_texture():
+            messagebox.showerror("Error", "No texture")
+            return
+
+        self.canvas.set_mode(RenderMode.TEXTURED)
 
     def close(self):
         self.canvas.clear_model()

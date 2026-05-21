@@ -65,6 +65,13 @@ class Canvas(GLCanvas):
 
         self.scene.set_model(None)
 
+    def set_mode(self, mode):
+        self.scene.set_mode(mode)
+        self.redraw_later()
+
+    def has_texture(self):
+        return self.scene.has_texture()
+
     def redraw_later(self):
         if self.ready:
             self.after_idle(self.draw)
